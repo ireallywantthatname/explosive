@@ -1,5 +1,6 @@
 "use client";
 import GameLobby from "./components/GameLobby";
+import { AudioToggle } from "./components/AudioToggle";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
         <h1 className="text-3xl sm:text-4xl font-bold">Explosive</h1>
       </div>
       <GameLobby />
+      <AudioToggle />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSocket } from "../../contexts/SocketContext";
 import GameBoard from "../../components/GameBoard";
+import { AudioToggle } from "../../components/AudioToggle";
 
 export default function GamePage() {
   const { gameState, playerRole, isConnected, error } = useSocket();
@@ -44,14 +45,15 @@ export default function GamePage() {
   if (!isConnected) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-        <div className="w-full max-w-md text-center bg-white p-6 rounded-lg shadow-lg">
+        <div className="w-full max-w-md text-center bg-white p-6">
           <h2 className="text-xl font-bold mb-4">
             Connecting to game server...
           </h2>
           <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div className="bg-blue-600 h-2 rounded-full animate-pulse"></div>
+            <div className="bg-rose-600 h-2 rounded-full animate-pulse"></div>
           </div>
         </div>
+        <AudioToggle />
       </div>
     );
   }
@@ -59,7 +61,7 @@ export default function GamePage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-        <div className="w-full max-w-md text-center bg-white p-6 rounded-lg shadow-lg">
+        <div className="w-full max-w-md text-center bg-white p-6">
           <h2 className="text-xl font-bold mb-4 text-red-600">Error</h2>
           <p>{error}</p>
           <button
@@ -69,6 +71,7 @@ export default function GamePage() {
             Return to Lobby
           </button>
         </div>
+        <AudioToggle />
       </div>
     );
   }
@@ -76,12 +79,13 @@ export default function GamePage() {
   if (!gameState) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-        <div className="w-full max-w-md text-center bg-white p-6 rounded-lg shadow-lg">
+        <div className="w-full max-w-md text-center bg-white p-6">
           <h2 className="text-xl font-bold mb-4">Waiting for game data...</h2>
           <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div className="bg-blue-600 h-2 rounded-full animate-pulse"></div>
+            <div className="bg-rose-600 h-2 rounded-full animate-pulse"></div>
           </div>
         </div>
+        <AudioToggle />
       </div>
     );
   }
@@ -123,6 +127,7 @@ export default function GamePage() {
         player2Name={gameState.player2Name || "Waiting for Player 2..."}
         playerRole={playerRole}
       />
+      <AudioToggle />
     </div>
   );
 }
