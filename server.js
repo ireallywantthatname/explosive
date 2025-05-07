@@ -33,7 +33,7 @@ app.prepare().then(() => {
       if (!gameState) {
         gameState = {
           redPosition: 1,
-          bluePosition: 4,
+          bluePosition: 1,
           currentPlayer: "player1",
           diceValue: null,
           gameMessage: `Game started! ${playerName} joined as Player 1`,

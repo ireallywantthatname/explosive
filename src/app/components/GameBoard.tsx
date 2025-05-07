@@ -42,7 +42,7 @@ type GameBoardProps = {
 
 export default function GameBoard({
   initialRedPosition = 1,
-  initialBluePosition = 4,
+  initialBluePosition = 1,
   initialCurrentPlayer = "player1",
   initialDiceValue = null,
   initialMessage = "",

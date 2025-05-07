@@ -3,7 +3,6 @@
 import "./globals.css";
 import { Space_Grotesk } from "next/font/google";
 import { SocketProvider } from "./contexts/SocketContext";
-import Head from "next/head";
 
 const SpaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
