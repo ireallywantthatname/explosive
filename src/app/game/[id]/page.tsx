@@ -87,12 +87,12 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-      <div className="w-full max-w-4xl text-center mb-4"></div>
+    <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 flex-col">
+      <div className="w-full max-w-4xl text-center mb-2 sm:mb-4"></div>
 
-      <div className="bg-white p-4 mb-4 w-full max-w-4xl">
-        <div className="flex justify-between items-center">
-          <div>
+      <div className="bg-white p-2 sm:p-4 mb-2 sm:mb-4 w-full max-w-4xl text-sm sm:text-base overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+          <div className="mb-1 sm:mb-0">
             <span className="font-bold">Game ID:</span> {gameState.gameId}
           </div>
           <div>

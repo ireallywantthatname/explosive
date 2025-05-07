@@ -52,7 +52,7 @@ export default function GameLobby() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-slate-100">
+    <div className="max-w-md mx-auto p-4 bg-slate-100">
       {/* <h2 className="text-2xl font-bold text-center mb-6">
         Explosive Game Lobby
       </h2> */}
@@ -85,16 +85,16 @@ export default function GameLobby() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4 mb-6">
         <button
           onClick={handleCreateGame}
           disabled={!isConnected || !playerName}
-          className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+          className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 order-2 sm:order-1"
         >
           Create New Game
         </button>
 
-        <div>
+        <div className="order-1 sm:order-2">
           <label
             htmlFor="gameId"
             className="block text-sm font-medium text-gray-700 mb-1"

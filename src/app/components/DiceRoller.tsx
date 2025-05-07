@@ -32,12 +32,13 @@ export default function DiceRoller({
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
       <button
         onClick={handleRoll}
         disabled={isRolling || disabled}
         className={`
-          px-4 py-2 font-bold text-white 
+          px-3 py-1.5 sm:px-4 sm:py-2 font-bold text-white text-sm sm:text-base
+          w-full sm:w-auto
           ${
             isRolling || disabled
               ? "bg-slate-700 cursor-not-allowed"
@@ -51,8 +52,8 @@ export default function DiceRoller({
 
       <div
         className={`
-          w-12 h-12 flex items-center justify-center
-          border-2 border-gray-400 font-bold text-xl
+          w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center
+          border-2 border-gray-400 font-bold text-lg sm:text-xl mt-2 sm:mt-0
           ${isRolling ? "animate-bounce" : ""}
         `}
       >

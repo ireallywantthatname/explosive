@@ -201,8 +201,12 @@ export default function GameBoard({
         );
       }
 
+      // Add the row with its unique key
       board.push(
-        <div key={`row-${row}`} className="flex justify-center mb-2">
+        <div
+          key={`row-${row}`}
+          className="flex flex-row justify-center mb-1 md:mb-2"
+        >
           {rowBoxes}
         </div>
       );
@@ -212,73 +216,65 @@ export default function GameBoard({
   };
 
   return (
-    <div className="bg-slate-100 p-4 border-2 border-slate-900 w-full max-w-4xl">
-      <div className="mb-4 text-center">
-        <h2 className="text-xl font-bold">
-          Current Player:{" "}
+    <div className="w-full max-w-4xl mx-auto">
+      {/* Game status */}
+      <div className="flex flex-col md:flex-row justify-between mb-4 p-2 bg-slate-100">
+        <div className="mb-2 md:mb-0">
+          <span className="font-bold">Current Turn: </span>
           <span
-            className={`${
+            className={
               currentPlayer === "player1" ? "text-violet-700" : "text-pink-700"
-            }`}
+            }
           >
-            {currentPlayer === "player1"
-              ? player1Name.toUpperCase()
-              : player2Name.toUpperCase()}
-            {currentPlayer === playerRole ? " (YOU)" : ""}
+            {currentPlayer === "player1" ? player1Name : player2Name}
           </span>
-        </h2>
-        {gameMessage && (
-          <div className="mt-2 text-slate-900">{gameMessage}</div>
-        )}
-        {gameWinner && (
-          <div className="mt-4 p-2 bg-yellow-100 text-yellow-800 rounded-md font-bold">
-            {gameWinner} has won the game! 🎉
-          </div>
-        )}
-      </div>
-
-      <div className="relative mb-6">
-        {/* Y-axis label */}
-        <div className="absolute -left-16 top-1/2 transform -translate-y-1/2 -rotate-90 font-bold text-slate-900">
-          Getting closer to the end
         </div>
-
-        {generateBoard()}
-
-        {/* X-axis label */}
-        <div className="absolute -right-24 top-1/2 transform -translate-y-1/2 rotate-90 font-bold text-slate-900">
-          Explosives become more dangerous
+        <div>
+          <span className="font-bold">Game Message: </span>
+          <span>{gameMessage}</span>
         </div>
       </div>
 
-      <div className="flex justify-center mt-6">
+      {/* Players */}
+      <div className="flex flex-col md:flex-row justify-between mb-4 p-2 bg-slate-100">
+        <div className="flex items-center mb-2 md:mb-0">
+          <div className="w-4 h-4 md:w-6 md:h-6 bg-violet-700 rounded-full mr-2"></div>
+          <span className="font-bold">{player1Name}</span>
+          {playerRole === "player1" && (
+            <span className="ml-1 text-xs">(You)</span>
+          )}
+        </div>
+        <div className="flex items-center">
+          <div className="w-4 h-4 md:w-6 md:h-6 bg-pink-700 rounded-full mr-2"></div>
+          <span className="font-bold">{player2Name}</span>
+          {playerRole === "player2" && (
+            <span className="ml-1 text-xs">(You)</span>
+          )}
+        </div>
+      </div>
+
+      {/* Game board */}
+      <div className="bg-white p-2 md:p-4 mb-4 overflow-x-auto">
+        <div className="min-w-max">{generateBoard()}</div>
+      </div>
+
+      {/* Game controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4 p-2 bg-slate-100">
         <DiceRoller
           onRoll={handleDiceRoll}
           value={diceValue}
           disabled={
             gameWinner !== null ||
             (currentPlayer === "player1" && playerRole !== "player1") ||
-            (currentPlayer === "player2" && playerRole !== "player2") ||
-            player2Name === "Waiting for Player 2..."
+            (currentPlayer === "player2" && playerRole !== "player2")
           }
         />
-      </div>
 
-      <div className="flex justify-around mt-8">
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-violet-700 rounded-full mr-2"></div>
-          <span className={playerRole === "player1" ? "font-bold" : ""}>
-            {player1Name} (Position: {redPosition})
-            {playerRole === "player1" ? " (YOU)" : ""}
-          </span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-pink-700 rounded-full mr-2"></div>
-          <span className={playerRole === "player2" ? "font-bold" : ""}>
-            {player2Name} (Position: {bluePosition})
-            {playerRole === "player2" ? " (YOU)" : ""}
-          </span>
-        </div>
+        {gameWinner && (
+          <div className="mt-4 md:mt-0 text-xl font-bold text-emerald-600">
+            {gameWinner} has won!
+          </div>
+        )}
       </div>
     </div>
   );
