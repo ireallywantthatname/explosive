@@ -58,6 +58,9 @@ export default function GameBoard({
   const [diceValue, setDiceValue] = useState<number | null>(initialDiceValue);
   const [gameMessage, setGameMessage] = useState<string>(initialMessage);
   const [gameWinner, setGameWinner] = useState<string | null>(null);
+  const [showFullscreenMessage, setShowFullscreenMessage] =
+    useState<boolean>(false);
+  const [isExplosive, setIsExplosive] = useState<boolean>(false);
 
   // Get the socket context
   const { updateGameState, gameState } = useSocket();
@@ -116,6 +119,8 @@ export default function GameBoard({
       } has won the game!`;
       setGameMessage(winnerMessage);
       setGameWinner(currentPlayer === "player1" ? player1Name : player2Name);
+      setShowFullscreenMessage(true);
+      setIsExplosive(false);
 
       // Update game state with server
       updateGameState({
@@ -135,6 +140,10 @@ export default function GameBoard({
       const punishment = punishmentMap[row as keyof typeof punishmentMap];
 
       if (punishment) {
+        // Show fullscreen message for explosive
+        setShowFullscreenMessage(true);
+        setIsExplosive(true);
+
         // Add a delay to show landing on explosive box first
         setTimeout(() => {
           const explosiveMessage = `${
@@ -158,6 +167,8 @@ export default function GameBoard({
             diceValue: value,
             gameMessage: explosiveMessage,
           });
+
+          // Remove the auto-close timer for explosive messages
         }, 1000);
 
         return;
@@ -216,7 +227,35 @@ export default function GameBoard({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto relative">
+      {showFullscreenMessage && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-90">
+          <div
+            className={`text-center p-8 rounded-lg ${
+              isExplosive ? "bg-red-600" : "bg-green-600"
+            } w-full h-full max-w-none mx-0 flex flex-col items-center justify-center`}
+          >
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-8">
+              {isExplosive ? "💥 EXPLOSIVE! 💥" : "🏆 WINNER! 🏆"}
+            </h2>
+            <p className="text-3xl md:text-4xl text-white mb-8">
+              {gameMessage}
+            </p>
+            {!isExplosive && gameWinner && (
+              <p className="text-4xl md:text-5xl font-bold text-white mb-8">
+                {gameWinner} has won the game!
+              </p>
+            )}
+            <button
+              onClick={() => setShowFullscreenMessage(false)}
+              className="mt-8 px-8 py-4 bg-white text-black text-xl font-bold rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Game status */}
       <div className="flex flex-col md:flex-row justify-between mb-4 p-2 bg-slate-100">
         <div className="mb-2 md:mb-0">
