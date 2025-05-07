@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import GameBox from "./GameBox";
 import DiceRoller from "./DiceRoller";
 import { useSocket } from "../contexts/SocketContext";
+import { useStory } from "../contexts/StoryContext";
 
 // Define the box positions with explosive boxes
 const explosiveBoxes = [8, 30, 43, 51, 56, 59, 61, 62];
@@ -64,6 +65,7 @@ export default function GameBoard({
 
   // Get the socket context
   const { updateGameState, gameState } = useSocket();
+  const { triggerEnding } = useStory();
 
   // Update local state when gameState changes from server
   useEffect(() => {
@@ -121,6 +123,9 @@ export default function GameBoard({
       setGameWinner(currentPlayer === "player1" ? player1Name : player2Name);
       setShowFullscreenMessage(true);
       setIsExplosive(false);
+
+      // Trigger the ending story when a player wins
+      triggerEnding();
 
       // Update game state with server
       updateGameState({

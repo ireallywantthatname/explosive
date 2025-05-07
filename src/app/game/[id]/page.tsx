@@ -3,13 +3,32 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSocket } from "../../contexts/SocketContext";
+import { useStory } from "../../contexts/StoryContext";
 import GameBoard from "../../components/GameBoard";
 import { AudioToggle } from "../../components/AudioToggle";
+import CutScene from "../../components/CutScene";
 
 export default function GamePage() {
   const { gameState, playerRole, isConnected, error } = useSocket();
+  const {
+    showIntro,
+    showEnding,
+    introText,
+    endingText,
+    markIntroAsShown,
+    markEndingAsShown,
+    triggerIntro,
+  } = useStory();
   const router = useRouter();
   const [gameMounted, setGameMounted] = useState(false);
+
+  // Trigger intro cutscene when the game first loads
+  useEffect(() => {
+    if (isConnected && gameState && !gameMounted) {
+      triggerIntro();
+      setGameMounted(true);
+    }
+  }, [isConnected, gameState, gameMounted, triggerIntro]);
 
   // Redirect if not connected or no game state after a timeout
   useEffect(() => {
@@ -22,12 +41,7 @@ export default function GamePage() {
 
       return () => clearTimeout(timer);
     }
-
-    // Mark as mounted after initial check
-    if (isConnected && !gameMounted) {
-      setGameMounted(true);
-    }
-  }, [isConnected, gameMounted, router]);
+  }, [isConnected, router]);
 
   // Redirect if no game state after connection is established
   useEffect(() => {
@@ -92,6 +106,10 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 flex-col">
+      {showIntro && <CutScene text={introText} onClose={markIntroAsShown} />}
+
+      {showEnding && <CutScene text={endingText} onClose={markEndingAsShown} />}
+
       <div className="w-full max-w-4xl text-center mb-2 sm:mb-4"></div>
 
       <div className="bg-white p-2 sm:p-4 mb-2 sm:mb-4 w-full max-w-4xl text-sm sm:text-base overflow-hidden">
