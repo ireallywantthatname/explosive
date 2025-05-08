@@ -8,7 +8,6 @@ interface GameBoxProps {
   redAnimating?: boolean;
   blueAnimating?: boolean;
   isCurrentPlayerHere?: boolean;
-  currentPlayer?: "player1" | "player2";
 }
 
 export default function GameBox({
@@ -19,11 +18,7 @@ export default function GameBox({
   redAnimating,
   blueAnimating,
   isCurrentPlayerHere,
-  currentPlayer,
 }: GameBoxProps) {
-  const isRedCurrentPlayer = currentPlayer === "player1";
-  const isBlueCurrentPlayer = currentPlayer === "player2";
-
   return (
     <div
       className={`
@@ -36,7 +31,9 @@ export default function GameBox({
       id={`box-${number}`}
     >
       {/* Box number */}
-      <div className="text-xs md:text-sm lg:text-lg font-semibold">{number}</div>
+      <div className="text-xs md:text-sm lg:text-lg font-semibold">
+        {number}
+      </div>
 
       {/* Explosive label */}
       {isExplosive && (
@@ -48,14 +45,10 @@ export default function GameBox({
       {/* Player markers */}
       <div className="absolute inset-0 flex items-center justify-center">
         {hasRed && !redAnimating && (
-          <div
-          className="absolute w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 bg-violet-600 border-2 border-white transform -translate-x-1 md:-translate-x-2 lg:-translate-x-3 z-10"
-          />
+          <div className="absolute w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 bg-violet-600 border-2 border-white transform -translate-x-1 md:-translate-x-2 lg:-translate-x-3 z-10" />
         )}
         {hasBlue && !blueAnimating && (
-          <div
-          className="absolute w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 bg-pink-600 border-2 border-white transform translate-x-1 md:translate-x-2 lg:translate-x-3 z-10"
-          />
+          <div className="absolute w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 bg-pink-600 border-2 border-white transform translate-x-1 md:translate-x-2 lg:translate-x-3 z-10" />
         )}
       </div>
     </div>

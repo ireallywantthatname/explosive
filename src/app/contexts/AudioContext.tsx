@@ -8,7 +8,13 @@ import {
   ReactNode,
 } from "react";
 
-type AudioType = "intro" | "dice_role" | "explosion" | "victory" | "reveal";
+type AudioType =
+  | "intro"
+  | "dice_role"
+  | "explosion"
+  | "victory"
+  | "reveal"
+  | "survived";
 
 interface AudioContextType {
   playSound: (soundType: AudioType) => void;
@@ -27,6 +33,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     explosion: null,
     victory: null,
     reveal: null,
+    survived: null,
   });
 
   useEffect(() => {
@@ -38,6 +45,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         explosion: new Audio("/assets/explosion.opus"),
         victory: new Audio("/assets/victory.opus"),
         reveal: new Audio("/assets/reveal.opus"),
+        survived: new Audio("/assets/survived.opus"),
       });
     }
   }, []);

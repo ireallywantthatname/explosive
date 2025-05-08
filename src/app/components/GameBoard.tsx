@@ -225,48 +225,84 @@ export default function GameBoard({
       const punishment = punishmentMap[row as keyof typeof punishmentMap];
 
       if (punishment) {
-        // Wait for the first animation to complete before showing explosion
-        setTimeout(() => {
-          // Show fullscreen message for explosive
-          setShowFullscreenMessage(true);
-          setIsExplosive(true);
-          playSound("explosion");
+        // Add 2/3 chance for the explosive to trigger
+        const shouldExplode = Math.random() < 2 / 3;
 
-          // Add a delay to show landing on explosive box first
+        if (shouldExplode) {
+          // Wait for the first animation to complete before showing explosion
           setTimeout(() => {
-            const explosiveMessage = `${
-              currentPlayer === "player1" ? player1Name : player2Name
-            } landed on explosive box and moved to box ${punishment}!`;
-            setGameMessage(explosiveMessage);
+            // Show fullscreen message for explosive
+            setShowFullscreenMessage(true);
+            setIsExplosive(true);
+            playSound("explosion");
 
-            // Set up animation for explosive movement
-            if (currentPlayer === "player1") {
-              setRedSourcePosition(newPosition);
-              setRedTargetPosition(punishment);
-              setRedAnimating(true);
-            } else {
-              setBlueSourcePosition(newPosition);
-              setBlueTargetPosition(punishment);
-              setBlueAnimating(true);
-            }
+            // Add a delay to show landing on explosive box first
+            setTimeout(() => {
+              const explosiveMessage = `${
+                currentPlayer === "player1" ? player1Name : player2Name
+              } landed on explosive box and moved to box ${punishment}!`;
+              setGameMessage(explosiveMessage);
 
-            // Update game state with server after explosion
-            updateGameState({
-              redPosition:
-                currentPlayer === "player1" ? punishment : redPosition,
-              bluePosition:
-                currentPlayer === "player1" ? bluePosition : punishment,
-              currentPlayer:
-                currentPlayer === "player1" ? "player2" : "player1",
-              diceValue: value,
-              gameMessage: explosiveMessage,
-              showFullscreenMessage: true,
-              isExplosive: true,
-            });
-          }, 1000);
-        }, 2000); // Wait for first animation
+              // Set up animation for explosive movement
+              if (currentPlayer === "player1") {
+                setRedSourcePosition(newPosition);
+                setRedTargetPosition(punishment);
+                setRedAnimating(true);
+              } else {
+                setBlueSourcePosition(newPosition);
+                setBlueTargetPosition(punishment);
+                setBlueAnimating(true);
+              }
 
-        return;
+              // Update game state with server after explosion
+              updateGameState({
+                redPosition:
+                  currentPlayer === "player1" ? punishment : redPosition,
+                bluePosition:
+                  currentPlayer === "player1" ? bluePosition : punishment,
+                currentPlayer:
+                  currentPlayer === "player1" ? "player2" : "player1",
+                diceValue: value,
+                gameMessage: explosiveMessage,
+                showFullscreenMessage: true,
+                isExplosive: true,
+              });
+            }, 1000);
+          }, 2000); // Wait for first animation
+
+          return;
+        } else {
+          // Explosive didn't trigger - create a message but continue normal movement
+          const luckyMessage = `${
+            currentPlayer === "player1" ? player1Name : player2Name
+          } got lucky! The explosive didn't trigger.`;
+          setGameMessage(luckyMessage);
+
+          // Play the survived sound
+          playSound("survived");
+
+          // Show fullscreen message for survived case
+          setTimeout(() => {
+            setShowFullscreenMessage(true);
+            setIsExplosive(false); // Using the same green background as winning
+          }, 500);
+
+          // Will switch player after animation completes
+          // Update game state with server with the lucky message
+          updateGameState({
+            redPosition:
+              currentPlayer === "player1" ? newPosition : redPosition,
+            bluePosition:
+              currentPlayer === "player1" ? bluePosition : newPosition,
+            currentPlayer: currentPlayer === "player1" ? "player2" : "player1",
+            diceValue: value,
+            gameMessage: luckyMessage,
+            showFullscreenMessage: true,
+            isExplosive: false,
+          });
+
+          return;
+        }
       }
     }
 
@@ -334,7 +370,6 @@ export default function GameBoard({
             redAnimating={redAnimating}
             blueAnimating={blueAnimating}
             isCurrentPlayerHere={isCurrentPlayerHere}
-            currentPlayer={currentPlayer}
           />
         );
       }
@@ -363,16 +398,22 @@ export default function GameBoard({
             } w-full h-full max-w-none mx-0 flex flex-col items-center justify-center`}
           >
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-8">
-              {isExplosive ? "💥 EXPLOSIVE! 💥" : "🏆 WINNER! 🏆"}
+              {isExplosive
+                ? "💥 EXPLOSIVE! 💥"
+                : gameMessage.includes("got lucky")
+                ? "😅 LUCKY ESCAPE! 😅"
+                : "🏆 WINNER! 🏆"}
             </h2>
             <p className="text-3xl md:text-4xl text-white mb-8">
               {gameMessage}
             </p>
-            {!isExplosive && gameWinner && (
-              <p className="text-4xl md:text-5xl font-bold text-white mb-8">
-                {gameWinner} has won the game!
-              </p>
-            )}
+            {!isExplosive &&
+              gameWinner &&
+              !gameMessage.includes("got lucky") && (
+                <p className="text-4xl md:text-5xl font-bold text-white mb-8">
+                  {gameWinner} has won the game!
+                </p>
+              )}
             <button
               onClick={() => {
                 setShowFullscreenMessage(false);
