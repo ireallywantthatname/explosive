@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAudio } from "../contexts/AudioContext";
 
 interface CutSceneProps {
   text: string;
   onClose: () => void;
   autoClose?: boolean;
   autoCloseDelay?: number;
+  soundType?: "intro" | "reveal";
 }
 
 export default function CutScene({
@@ -14,13 +16,19 @@ export default function CutScene({
   onClose,
   autoClose = false,
   autoCloseDelay = 10000, // 10 seconds by default
+  soundType,
 }: CutSceneProps) {
   const [visible, setVisible] = useState(false);
+  const { playSound } = useAudio();
 
   useEffect(() => {
     // Fade in effect
     const timer = setTimeout(() => {
       setVisible(true);
+      // Play the corresponding sound if provided
+      if (soundType) {
+        playSound(soundType);
+      }
     }, 300);
 
     // Auto close timer if enabled
@@ -36,7 +44,7 @@ export default function CutScene({
       clearTimeout(timer);
       if (closeTimer) clearTimeout(closeTimer);
     };
-  }, [autoClose, autoCloseDelay, onClose]);
+  }, [autoClose, autoCloseDelay, onClose, playSound, soundType]);
 
   const handleSkip = () => {
     setVisible(false);

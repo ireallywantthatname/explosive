@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAudio } from "../contexts/AudioContext";
 
 interface DiceRollerProps {
   onRoll: (value: number) => void;
@@ -14,12 +15,16 @@ export default function DiceRoller({
   disabled = false,
 }: DiceRollerProps) {
   const [isRolling, setIsRolling] = useState(false);
+  const { playSound } = useAudio();
 
   const handleRoll = () => {
     if (isRolling || disabled) return;
 
     // Start rolling animation
     setIsRolling(true);
+
+    // Play dice roll sound
+    playSound("dice_role");
 
     // Generate random value between 1 and 6
     const newValue = Math.floor(Math.random() * 6) + 1;

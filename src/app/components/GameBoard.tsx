@@ -5,6 +5,7 @@ import GameBox from "./GameBox";
 import DiceRoller from "./DiceRoller";
 import { useSocket } from "../contexts/SocketContext";
 import { useStory } from "../contexts/StoryContext";
+import { useAudio } from "../contexts/AudioContext";
 import AnimatedMarker from "./AnimatedMarker";
 
 // Define the box positions with explosive boxes
@@ -79,6 +80,7 @@ export default function GameBoard({
   // Get the socket context
   const { updateGameState, gameState } = useSocket();
   const { triggerEnding } = useStory();
+  const { playSound } = useAudio();
 
   // Update local state when gameState changes from server
   useEffect(() => {
@@ -111,6 +113,16 @@ export default function GameBoard({
         setShowFullscreenMessage(true);
         setIsExplosive(gameState.isExplosive || false);
 
+        // Play appropriate sound
+        if (gameState.isExplosive) {
+          playSound("explosion");
+        } else if (
+          gameState.redPosition === 63 ||
+          gameState.bluePosition === 63
+        ) {
+          playSound("victory");
+        }
+
         // Determine winner if this is a winning message
         if (!gameState.isExplosive) {
           if (gameState.redPosition === 63) {
@@ -121,7 +133,14 @@ export default function GameBoard({
         }
       }
     }
-  }, [gameState]);
+  }, [
+    gameState,
+    playSound,
+    redAnimating,
+    blueAnimating,
+    redPosition,
+    bluePosition,
+  ]);
 
   // Handle dice roll
   const handleDiceRoll = (value: number) => {
@@ -180,6 +199,7 @@ export default function GameBoard({
       setTimeout(() => {
         setShowFullscreenMessage(true);
         setIsExplosive(false);
+        playSound("victory");
       }, 2000);
 
       // Trigger the ending story when a player wins
@@ -210,6 +230,7 @@ export default function GameBoard({
           // Show fullscreen message for explosive
           setShowFullscreenMessage(true);
           setIsExplosive(true);
+          playSound("explosion");
 
           // Add a delay to show landing on explosive box first
           setTimeout(() => {

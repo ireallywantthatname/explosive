@@ -102,9 +102,21 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 flex-col">
-      {showIntro && <CutScene text={introText} onClose={markIntroAsShown} />}
+      {showIntro && (
+        <CutScene
+          text={introText}
+          onClose={markIntroAsShown}
+          soundType="intro"
+        />
+      )}
 
-      {showEnding && <CutScene text={endingText} onClose={markEndingAsShown} />}
+      {showEnding && (
+        <CutScene
+          text={endingText}
+          onClose={markEndingAsShown}
+          soundType="reveal"
+        />
+      )}
 
       <div className="w-full max-w-4xl text-center mb-2 sm:mb-4"></div>
 

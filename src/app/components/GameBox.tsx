@@ -5,11 +5,8 @@ interface GameBoxProps {
   isExplosive: boolean;
   hasRed: boolean;
   hasBlue: boolean;
-  redTargetPosition?: number;
-  blueTargetPosition?: number;
   redAnimating?: boolean;
   blueAnimating?: boolean;
-  boxPositions?: Record<number, { top: number; left: number }>;
 }
 
 export default function GameBox({
@@ -17,11 +14,8 @@ export default function GameBox({
   isExplosive,
   hasRed,
   hasBlue,
-  redTargetPosition,
-  blueTargetPosition,
   redAnimating,
   blueAnimating,
-  boxPositions,
 }: GameBoxProps) {
   return (
     <div

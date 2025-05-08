@@ -4,6 +4,7 @@ import "./globals.css";
 import { Space_Grotesk } from "next/font/google";
 import { SocketProvider } from "./contexts/SocketContext";
 import { StoryProvider } from "./contexts/StoryContext";
+import { AudioProvider } from "./contexts/AudioContext";
 
 const SpaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -26,7 +27,9 @@ export default function RootLayout({
         className={`${SpaceGrotesk.className} min-h-screen bg-slate-100 antialiased`}
       >
         <SocketProvider>
-          <StoryProvider>{children}</StoryProvider>
+          <StoryProvider>
+            <AudioProvider>{children}</AudioProvider>
+          </StoryProvider>
         </SocketProvider>
       </body>
     </html>
