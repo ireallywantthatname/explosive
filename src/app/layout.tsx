@@ -3,7 +3,6 @@
 import "./globals.css";
 import { Space_Grotesk } from "next/font/google";
 import { SocketProvider } from "./contexts/SocketContext";
-import { AudioProvider } from "./contexts/AudioContext";
 import { StoryProvider } from "./contexts/StoryContext";
 
 const SpaceGrotesk = Space_Grotesk({
@@ -26,11 +25,9 @@ export default function RootLayout({
       <body
         className={`${SpaceGrotesk.className} min-h-screen bg-slate-100 antialiased`}
       >
-        <AudioProvider>
-          <SocketProvider>
-            <StoryProvider>{children}</StoryProvider>
-          </SocketProvider>
-        </AudioProvider>
+        <SocketProvider>
+          <StoryProvider>{children}</StoryProvider>
+        </SocketProvider>
       </body>
     </html>
   );

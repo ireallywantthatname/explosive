@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useSocket } from "../../contexts/SocketContext";
 import { useStory } from "../../contexts/StoryContext";
 import GameBoard from "../../components/GameBoard";
-import { AudioToggle } from "../../components/AudioToggle";
 import CutScene from "../../components/CutScene";
 
 export default function GamePage() {
@@ -67,7 +66,6 @@ export default function GamePage() {
             <div className="bg-rose-600 h-2 rounded-full animate-pulse"></div>
           </div>
         </div>
-        <AudioToggle />
       </div>
     );
   }
@@ -85,7 +83,6 @@ export default function GamePage() {
             Return to Lobby
           </button>
         </div>
-        <AudioToggle />
       </div>
     );
   }
@@ -99,7 +96,6 @@ export default function GamePage() {
             <div className="bg-rose-600 h-2 rounded-full animate-pulse"></div>
           </div>
         </div>
-        <AudioToggle />
       </div>
     );
   }
@@ -145,7 +141,6 @@ export default function GamePage() {
         player2Name={gameState.player2Name || "Waiting for Player 2..."}
         playerRole={playerRole}
       />
-      <AudioToggle />
     </div>
   );
 }
