@@ -5,6 +5,7 @@ import GameBox from "./GameBox";
 import DiceRoller from "./DiceRoller";
 import { useSocket } from "../contexts/SocketContext";
 import { useStory } from "../contexts/StoryContext";
+import AnimatedMarker from "./AnimatedMarker";
 
 // Define the box positions with explosive boxes
 const explosiveBoxes = [8, 30, 43, 51, 56, 59, 61, 62];
@@ -63,6 +64,18 @@ export default function GameBoard({
     useState<boolean>(false);
   const [isExplosive, setIsExplosive] = useState<boolean>(false);
 
+  // Animation states
+  const [redAnimating, setRedAnimating] = useState<boolean>(false);
+  const [blueAnimating, setBlueAnimating] = useState<boolean>(false);
+  const [redSourcePosition, setRedSourcePosition] =
+    useState<number>(initialRedPosition);
+  const [blueSourcePosition, setBlueSourcePosition] =
+    useState<number>(initialBluePosition);
+  const [redTargetPosition, setRedTargetPosition] =
+    useState<number>(initialRedPosition);
+  const [blueTargetPosition, setBlueTargetPosition] =
+    useState<number>(initialBluePosition);
+
   // Get the socket context
   const { updateGameState, gameState } = useSocket();
   const { triggerEnding } = useStory();
@@ -70,8 +83,25 @@ export default function GameBoard({
   // Update local state when gameState changes from server
   useEffect(() => {
     if (gameState) {
-      setRedPosition(gameState.redPosition);
-      setBluePosition(gameState.bluePosition);
+      // If there's an animation in progress, don't update positions yet
+      if (!redAnimating && !blueAnimating) {
+        if (redPosition !== gameState.redPosition) {
+          setRedSourcePosition(redPosition);
+          setRedTargetPosition(gameState.redPosition);
+          setRedAnimating(true);
+        } else {
+          setRedPosition(gameState.redPosition);
+        }
+
+        if (bluePosition !== gameState.bluePosition) {
+          setBlueSourcePosition(bluePosition);
+          setBlueTargetPosition(gameState.bluePosition);
+          setBlueAnimating(true);
+        } else {
+          setBluePosition(gameState.bluePosition);
+        }
+      }
+
       setCurrentPlayer(gameState.currentPlayer);
       setDiceValue(gameState.diceValue);
       setGameMessage(gameState.gameMessage);
@@ -104,6 +134,11 @@ export default function GameBoard({
       return;
     }
 
+    // Don't allow dice roll if animation is in progress
+    if (redAnimating || blueAnimating) {
+      return;
+    }
+
     // Update local state
     setDiceValue(value);
 
@@ -116,11 +151,15 @@ export default function GameBoard({
       newPosition = 63;
     }
 
-    // Update player position
+    // Set source and target positions for animation
     if (currentPlayer === "player1") {
-      setRedPosition(newPosition);
+      setRedSourcePosition(redPosition);
+      setRedTargetPosition(newPosition);
+      setRedAnimating(true);
     } else {
-      setBluePosition(newPosition);
+      setBlueSourcePosition(bluePosition);
+      setBlueTargetPosition(newPosition);
+      setBlueAnimating(true);
     }
 
     // Create message
@@ -136,8 +175,12 @@ export default function GameBoard({
       } has won the game!`;
       setGameMessage(winnerMessage);
       setGameWinner(currentPlayer === "player1" ? player1Name : player2Name);
-      setShowFullscreenMessage(true);
-      setIsExplosive(false);
+
+      // Wait for animation to complete before showing fullscreen message
+      setTimeout(() => {
+        setShowFullscreenMessage(true);
+        setIsExplosive(false);
+      }, 2000);
 
       // Trigger the ending story when a player wins
       triggerEnding();
@@ -162,55 +205,86 @@ export default function GameBoard({
       const punishment = punishmentMap[row as keyof typeof punishmentMap];
 
       if (punishment) {
-        // Show fullscreen message for explosive
-        setShowFullscreenMessage(true);
-        setIsExplosive(true);
-
-        // Add a delay to show landing on explosive box first
+        // Wait for the first animation to complete before showing explosion
         setTimeout(() => {
-          const explosiveMessage = `${
-            currentPlayer === "player1" ? player1Name : player2Name
-          } landed on explosive box and moved to box ${punishment}!`;
-          setGameMessage(explosiveMessage);
+          // Show fullscreen message for explosive
+          setShowFullscreenMessage(true);
+          setIsExplosive(true);
 
-          // Update position after explosion
-          if (currentPlayer === "player1") {
-            setRedPosition(punishment);
-          } else {
-            setBluePosition(punishment);
-          }
+          // Add a delay to show landing on explosive box first
+          setTimeout(() => {
+            const explosiveMessage = `${
+              currentPlayer === "player1" ? player1Name : player2Name
+            } landed on explosive box and moved to box ${punishment}!`;
+            setGameMessage(explosiveMessage);
 
-          // Update game state with server after explosion
-          updateGameState({
-            redPosition: currentPlayer === "player1" ? punishment : redPosition,
-            bluePosition:
-              currentPlayer === "player1" ? bluePosition : punishment,
-            currentPlayer: currentPlayer === "player1" ? "player2" : "player1",
-            diceValue: value,
-            gameMessage: explosiveMessage,
-            showFullscreenMessage: true,
-            isExplosive: true,
-          });
+            // Set up animation for explosive movement
+            if (currentPlayer === "player1") {
+              setRedSourcePosition(newPosition);
+              setRedTargetPosition(punishment);
+              setRedAnimating(true);
+            } else {
+              setBlueSourcePosition(newPosition);
+              setBlueTargetPosition(punishment);
+              setBlueAnimating(true);
+            }
 
-          // Remove the auto-close timer for explosive messages
-        }, 1000);
+            // Update game state with server after explosion
+            updateGameState({
+              redPosition:
+                currentPlayer === "player1" ? punishment : redPosition,
+              bluePosition:
+                currentPlayer === "player1" ? bluePosition : punishment,
+              currentPlayer:
+                currentPlayer === "player1" ? "player2" : "player1",
+              diceValue: value,
+              gameMessage: explosiveMessage,
+              showFullscreenMessage: true,
+              isExplosive: true,
+            });
+          }, 1000);
+        }, 2000); // Wait for first animation
 
         return;
       }
     }
 
-    // Switch player
-    const nextPlayer = currentPlayer === "player1" ? "player2" : "player1";
-    setCurrentPlayer(nextPlayer);
-
+    // Will switch player after animation completes
     // Update game state with server
     updateGameState({
       redPosition: currentPlayer === "player1" ? newPosition : redPosition,
       bluePosition: currentPlayer === "player1" ? bluePosition : newPosition,
-      currentPlayer: nextPlayer,
+      currentPlayer: currentPlayer === "player1" ? "player2" : "player1",
       diceValue: value,
       gameMessage: message,
     });
+  };
+
+  // Handle completion of animations
+  const handleRedAnimationComplete = () => {
+    setRedPosition(redTargetPosition);
+    setRedAnimating(false);
+
+    // Switch player if this was a regular move (not an explosive move)
+    if (
+      currentPlayer === "player1" &&
+      !explosiveBoxes.includes(redTargetPosition)
+    ) {
+      setCurrentPlayer("player2");
+    }
+  };
+
+  const handleBlueAnimationComplete = () => {
+    setBluePosition(blueTargetPosition);
+    setBlueAnimating(false);
+
+    // Switch player if this was a regular move (not an explosive move)
+    if (
+      currentPlayer === "player2" &&
+      !explosiveBoxes.includes(blueTargetPosition)
+    ) {
+      setCurrentPlayer("player1");
+    }
   };
 
   // Generate board - 7 rows x 9 columns, with zigzag pattern
@@ -230,8 +304,10 @@ export default function GameBoard({
             key={boxNumber}
             number={boxNumber}
             isExplosive={explosiveBoxes.includes(boxNumber)}
-            hasRed={boxNumber === redPosition}
-            hasBlue={boxNumber === bluePosition}
+            hasRed={boxNumber === redPosition && !redAnimating}
+            hasBlue={boxNumber === bluePosition && !blueAnimating}
+            redAnimating={redAnimating}
+            blueAnimating={blueAnimating}
           />
         );
       }
@@ -326,7 +402,28 @@ export default function GameBoard({
 
       {/* Game board */}
       <div className="bg-white p-2 md:p-4 mb-4 overflow-x-auto">
-        <div className="min-w-max">{generateBoard()}</div>
+        <div className="min-w-max relative">
+          {generateBoard()}
+
+          {/* Animated markers */}
+          {redAnimating && (
+            <AnimatedMarker
+              color="red"
+              sourcePosition={redSourcePosition}
+              targetPosition={redTargetPosition}
+              onAnimationComplete={handleRedAnimationComplete}
+            />
+          )}
+
+          {blueAnimating && (
+            <AnimatedMarker
+              color="blue"
+              sourcePosition={blueSourcePosition}
+              targetPosition={blueTargetPosition}
+              onAnimationComplete={handleBlueAnimationComplete}
+            />
+          )}
+        </div>
       </div>
 
       {/* Game controls */}
@@ -336,6 +433,8 @@ export default function GameBoard({
           value={diceValue}
           disabled={
             gameWinner !== null ||
+            redAnimating ||
+            blueAnimating ||
             (currentPlayer === "player1" && playerRole !== "player1") ||
             (currentPlayer === "player2" && playerRole !== "player2")
           }
