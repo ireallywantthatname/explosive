@@ -75,6 +75,21 @@ export default function GameBoard({
       setCurrentPlayer(gameState.currentPlayer);
       setDiceValue(gameState.diceValue);
       setGameMessage(gameState.gameMessage);
+
+      // Check if there's an explosion or winner message in the gameState
+      if (gameState.showFullscreenMessage) {
+        setShowFullscreenMessage(true);
+        setIsExplosive(gameState.isExplosive || false);
+
+        // Determine winner if this is a winning message
+        if (!gameState.isExplosive) {
+          if (gameState.redPosition === 63) {
+            setGameWinner(gameState.player1Name);
+          } else if (gameState.bluePosition === 63) {
+            setGameWinner(gameState.player2Name);
+          }
+        }
+      }
     }
   }, [gameState]);
 
@@ -134,6 +149,8 @@ export default function GameBoard({
         currentPlayer: currentPlayer === "player1" ? "player2" : "player1",
         diceValue: value,
         gameMessage: winnerMessage,
+        showFullscreenMessage: true,
+        isExplosive: false,
       });
 
       return;
@@ -171,6 +188,8 @@ export default function GameBoard({
             currentPlayer: currentPlayer === "player1" ? "player2" : "player1",
             diceValue: value,
             gameMessage: explosiveMessage,
+            showFullscreenMessage: true,
+            isExplosive: true,
           });
 
           // Remove the auto-close timer for explosive messages
@@ -252,8 +271,16 @@ export default function GameBoard({
               </p>
             )}
             <button
-              onClick={() => setShowFullscreenMessage(false)}
-              className="mt-8 px-8 py-4 bg-white text-black text-xl font-bold rounded-lg hover:bg-gray-200 transition-colors"
+              onClick={() => {
+                setShowFullscreenMessage(false);
+                // Also update the server state to hide the message for the other player
+                if (gameState) {
+                  updateGameState({
+                    showFullscreenMessage: false,
+                  });
+                }
+              }}
+              className="mt-8 px-8 py-4 bg-white text-black text-xl font-bold hover:bg-gray-200 transition-colors"
             >
               Close
             </button>

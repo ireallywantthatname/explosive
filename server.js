@@ -40,6 +40,8 @@ app.prepare().then(() => {
           player1Name: playerName,
           player2Name: "",
           gameId,
+          showFullscreenMessage: false,
+          isExplosive: false,
         };
         gameSessions.set(gameId, gameState);
         socket.join(gameId);

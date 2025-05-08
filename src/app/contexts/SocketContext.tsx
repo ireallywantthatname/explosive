@@ -12,6 +12,8 @@ type GameState = {
   player1Name: string;
   player2Name: string;
   gameId: string;
+  showFullscreenMessage?: boolean;
+  isExplosive?: boolean;
 };
 
 type SocketContextType = {
