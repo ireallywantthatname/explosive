@@ -320,6 +320,10 @@ export default function GameBoard({
       // Generate boxes for this row
       for (let i = 0; i < 9; i++) {
         const boxNumber = row % 2 === 1 ? startBox + i : startBox - i;
+        const isCurrentPlayerHere =
+          (currentPlayer === "player1" && boxNumber === redPosition) ||
+          (currentPlayer === "player2" && boxNumber === bluePosition);
+
         rowBoxes.push(
           <GameBox
             key={boxNumber}
@@ -329,6 +333,8 @@ export default function GameBoard({
             hasBlue={boxNumber === bluePosition && !blueAnimating}
             redAnimating={redAnimating}
             blueAnimating={blueAnimating}
+            isCurrentPlayerHere={isCurrentPlayerHere}
+            currentPlayer={currentPlayer}
           />
         );
       }
@@ -352,7 +358,7 @@ export default function GameBoard({
       {showFullscreenMessage && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-90">
           <div
-            className={`text-center p-8 rounded-lg ${
+            className={`text-center p-8 ${
               isExplosive ? "bg-red-600" : "bg-green-600"
             } w-full h-full max-w-none mx-0 flex flex-col items-center justify-center`}
           >
@@ -387,12 +393,14 @@ export default function GameBoard({
 
       {/* Game status */}
       <div className="flex flex-col md:flex-row justify-between mb-4 p-2 bg-slate-100">
-        <div className="mb-2 md:mb-0">
-          <span className="font-bold">Current Turn: </span>
+        <div className="mb-2 md:mb-0 font-bold">
+          <span className="mr-2">Current Turn:</span>
           <span
-            className={
-              currentPlayer === "player1" ? "text-violet-700" : "text-pink-700"
-            }
+            className={`py-1 px-3 ${
+              currentPlayer === "player1"
+                ? "bg-violet-600 text-white"
+                : "bg-pink-600 text-white"
+            }`}
           >
             {currentPlayer === "player1" ? player1Name : player2Name}
           </span>
@@ -405,24 +413,50 @@ export default function GameBoard({
 
       {/* Players */}
       <div className="flex flex-col md:flex-row justify-between mb-4 p-2 bg-slate-100">
-        <div className="flex items-center mb-2 md:mb-0">
-          <div className="w-4 h-4 md:w-6 md:h-6 bg-violet-700 rounded-full mr-2"></div>
+        <div
+          className={`flex items-center mb-2 md:mb-0 p-2 ${
+            currentPlayer === "player1" ? "bg-violet-100" : ""
+          }`}
+        >
+          <div
+            className={`w-5 h-5 md:w-7 md:h-7 bg-violet-600 mr-2 ${
+              currentPlayer === "player1" ? "border-2 border-violet-500" : ""
+            }`}
+          ></div>
           <span className="font-bold">{player1Name}</span>
           {playerRole === "player1" && (
             <span className="ml-1 text-xs">(You)</span>
           )}
+          {currentPlayer === "player1" && (
+            <span className="ml-2 text-xs bg-violet-600 text-white px-2 py-1">
+              Your Turn
+            </span>
+          )}
         </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 md:w-6 md:h-6 bg-pink-700 rounded-full mr-2"></div>
+        <div
+          className={`flex items-center p-2 ${
+            currentPlayer === "player2" ? "bg-pink-100" : ""
+          }`}
+        >
+          <div
+            className={`w-5 h-5 md:w-7 md:h-7 bg-pink-600 mr-2 ${
+              currentPlayer === "player2" ? "border-2 border-pink-500" : ""
+            }`}
+          ></div>
           <span className="font-bold">{player2Name}</span>
           {playerRole === "player2" && (
             <span className="ml-1 text-xs">(You)</span>
+          )}
+          {currentPlayer === "player2" && (
+            <span className="ml-2 text-xs bg-pink-600 text-white px-2 py-1">
+              Your Turn
+            </span>
           )}
         </div>
       </div>
 
       {/* Game board */}
-      <div className="bg-white p-2 md:p-4 mb-4 overflow-x-auto">
+      <div className="p-2 md:p-4 mb-4 overflow-x-auto">
         <div className="min-w-max relative">
           {generateBoard()}
 
@@ -448,18 +482,36 @@ export default function GameBoard({
       </div>
 
       {/* Game controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 p-2 bg-slate-100">
-        <DiceRoller
-          onRoll={handleDiceRoll}
-          value={diceValue}
-          disabled={
-            gameWinner !== null ||
-            redAnimating ||
-            blueAnimating ||
-            (currentPlayer === "player1" && playerRole !== "player1") ||
-            (currentPlayer === "player2" && playerRole !== "player2")
-          }
-        />
+      <div
+        className={`flex flex-col md:flex-row justify-between items-center mb-4 p-3 ${
+          (currentPlayer === "player1" && playerRole === "player1") ||
+          (currentPlayer === "player2" && playerRole === "player2")
+            ? "bg-white"
+            : "bg-slate-100"
+        }`}
+      >
+        <div className="flex items-center">
+          <DiceRoller
+            onRoll={handleDiceRoll}
+            value={diceValue}
+            disabled={
+              gameWinner !== null ||
+              redAnimating ||
+              blueAnimating ||
+              (currentPlayer === "player1" && playerRole !== "player1") ||
+              (currentPlayer === "player2" && playerRole !== "player2")
+            }
+          />
+          {((currentPlayer === "player1" && playerRole === "player1") ||
+            (currentPlayer === "player2" && playerRole === "player2")) &&
+            !gameWinner &&
+            !redAnimating &&
+            !blueAnimating && (
+              <div className="ml-4 font-bold text-slate-900">
+                Your turn to roll!
+              </div>
+            )}
+        </div>
 
         {gameWinner && (
           <div className="mt-4 md:mt-0 text-xl font-bold text-emerald-600">

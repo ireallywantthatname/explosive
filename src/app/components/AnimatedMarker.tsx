@@ -19,7 +19,7 @@ export default function AnimatedMarker({
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Colors for the markers
-  const bgColor = color === "red" ? "bg-violet-700" : "bg-pink-700";
+  const bgColor = color === "red" ? "bg-violet-600" : "bg-pink-600";
   const xOffset =
     color === "red"
       ? "-translate-x-1 md:-translate-x-2 lg:-translate-x-3"
@@ -76,7 +76,7 @@ export default function AnimatedMarker({
 
   return (
     <div
-      className={`absolute w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6 ${bgColor} rounded-full transform ${xOffset} z-20`}
+      className={`absolute w-4 h-4 md:w-5 md:h-5 lg:w-7 lg:h-7 ${bgColor} border-2 border-white transform ${xOffset} z-20`}
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,

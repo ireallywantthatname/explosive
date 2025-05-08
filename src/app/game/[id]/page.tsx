@@ -55,46 +55,59 @@ export default function GamePage() {
     }
   }, [gameState, gameMounted, router]);
 
+  // Show loading message if not connected or no game state yet
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-        <div className="w-full max-w-md text-center bg-white p-6">
-          <h2 className="text-xl font-bold mb-4">
-            Connecting to game server...
-          </h2>
-          <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div className="bg-rose-600 h-2 rounded-full animate-pulse"></div>
-          </div>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white p-6 w-full max-w-lg text-center">
+          <p className="mb-2">Connecting to server...</p>
+          <p className="text-sm text-gray-500">
+            If you are not redirected in a few seconds, please go back and try
+            again.
+          </p>
         </div>
       </div>
     );
   }
 
+  // Show connection error message if there is one
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-        <div className="w-full max-w-md text-center bg-white p-6">
-          <h2 className="text-xl font-bold mb-4 text-red-600">Error</h2>
-          <p>{error}</p>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white p-6 w-full max-w-lg text-center">
+          <p className="text-red-500 mb-2">Error: {error}</p>
+          <p className="text-sm">
+            Please go back and try again, or create a new game.
+          </p>
           <button
             onClick={() => router.push("/")}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+            className="mt-4 px-4 py-2 bg-indigo-600 text-white"
           >
-            Return to Lobby
+            Go Back
           </button>
         </div>
       </div>
     );
   }
 
+  // Show waiting message if no game state yet
   if (!gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 flex-col">
-        <div className="w-full max-w-md text-center bg-white p-6">
-          <h2 className="text-xl font-bold mb-4">Waiting for game data...</h2>
-          <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div className="bg-rose-600 h-2 rounded-full animate-pulse"></div>
-          </div>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white p-6 w-full max-w-lg text-center">
+          <p className="mb-2">
+            Waiting for game state... The game ID might be invalid.
+          </p>
+          <p className="text-sm text-gray-500">
+            If you are not redirected in a few seconds, please go back and try
+            again.
+          </p>
+          <button
+            onClick={() => router.push("/")}
+            className="mt-4 px-4 py-2 bg-indigo-600 text-white"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );

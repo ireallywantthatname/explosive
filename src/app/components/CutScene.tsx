@@ -57,7 +57,7 @@ export default function CutScene({
       style={{ opacity: visible ? 1 : 0 }}
     >
       <div className="text-center p-8 max-w-3xl">
-        <p className="text-2xl md:text-3xl text-white leading-relaxed mb-12 italic">
+        <p className="text-2xl md:text-3xl text-white leading-relaxed mb-12">
           {text}
         </p>
         <button

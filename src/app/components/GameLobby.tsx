@@ -79,7 +79,7 @@ export default function GameLobby() {
           id="playerName"
           value={playerName}
           onChange={(e) => setPlayerName(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full px-3 py-2 border border-gray-300 focus:outline-none"
           placeholder="Enter your name"
           disabled={!isConnected}
         />
@@ -89,7 +89,7 @@ export default function GameLobby() {
         <button
           onClick={handleCreateGame}
           disabled={!isConnected || !playerName}
-          className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 order-2 sm:order-1"
+          className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none disabled:opacity-50 order-2 sm:order-1"
         >
           Create New Game
         </button>
@@ -106,14 +106,14 @@ export default function GameLobby() {
             id="gameId"
             value={gameId}
             onChange={(e) => setGameId(e.target.value.toUpperCase())}
-            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-900 mb-2"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none mb-2"
             placeholder="Enter game ID"
             disabled={!isConnected}
           />
           <button
             onClick={handleJoinGame}
             disabled={!isConnected || !playerName || !gameId}
-            className="w-full px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="w-full px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none disabled:opacity-50"
           >
             Join Game
           </button>
